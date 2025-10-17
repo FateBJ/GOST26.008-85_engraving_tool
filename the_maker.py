@@ -29,3 +29,31 @@ origin=input("Choose the anchor pont of the text box\n"
              "7 - upper-left\n"
              "8 - upper-right\n")
 print("\n")
+talign=input("Aligning:\n0-center\n1-left\n2-right\n")
+print("\n")
+zdepth=input("Enter the z-depth\n")
+print("\n")
+shigh=input("Enter the safe high\n")
+print("\n")
+cspeed=input("Enter the speed of cutting/drawing\n")
+print("\n")
+fspeed=input("Enter the speed of free movements\n")
+print("\n")
+if mode==1:
+    spindel=input("Enter the spindle rotation speed\n")
+print("\n")
+text=input("Enter the text\n")
+print("\n")
+
+##FORMING THE ENSURING STRING##
+
+estring="Mode: "
+if mode==0: estring=estring+"engraving\n"
+if mode==1: estring=estring+"drawing\n"
+estring=estring+"Text high: "+h+"\n"
+
+##CHECKING ON THE PARAMETERS##
+
+print(estring)
+print("\n")
+again=input("Is it correct? Y/N\n")
