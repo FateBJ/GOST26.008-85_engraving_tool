@@ -18,3 +18,14 @@ mode=input("Choose the mode.\n\n"
 print("\n")
 h=input("Enter the high of the font.\n\n")
 print("\n")
+origin=input("Choose the anchor pont of the text box\n"
+             "0 - bottom-center\n"
+             "1 - bottom-left\n"
+             "2 - bottom-right\n"
+             "3 - center\n"
+             "4 - center-left\n"
+             "5 - center-right\n"
+             "6 - upper-center\n"
+             "7 - upper-left\n"
+             "8 - upper-right\n")
+print("\n")
