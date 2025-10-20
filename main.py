@@ -13,7 +13,7 @@ xpos=0
 ypos=0
 zpos=10
 
-import latA.py
+import latA
 
 ##FETHING THE PARAMETERS##
 
@@ -72,3 +72,6 @@ input_params()
 
 #placeholder#
 
+#DEBUG
+latA.main()
+print (output)
