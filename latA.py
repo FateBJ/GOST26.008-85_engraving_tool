@@ -77,4 +77,4 @@ def main():
     xpos=startxpos+16*K
     ypos=startypos
     move()
-    return (16)
+    return (16*K)
