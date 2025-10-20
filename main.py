@@ -1,5 +1,5 @@
 ##VARIABLE SECTION##
-
+output=str('') #Output file text
 mode=0 #mode. 0 - engraving, 1 - drawing
 h=16 #font high in mm
 origin=0 #position of the origin. 0 - bottom-center, 1 - bottom-left, 2 - bottom-right, 3 - center, 4 - center-left, 5 - center-right, 6 - upper-center, 7 - upper-left 8 - upper-right
@@ -9,6 +9,11 @@ shigh=1 #safe high Z mm
 cspeed=100 #cutting/drawing moves speed
 fspeed=3000 #free movement speed
 spindel=25000 #spindel rotation speed RPM
+xpos=0
+ypos=0
+zpos=10
+
+import latA.py
 
 ##FETHING THE PARAMETERS##
 
