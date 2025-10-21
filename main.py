@@ -63,16 +63,16 @@ def input_params(mode,h,origin,talign,zdepth,shigh,cspeed,fspeed,spindel,text):
 #placeholder#
 
 #DEBUG
-def cut(xpos,ypos,zpos,shigh,h,fspeed,zdepth): #Cutting stroke
+def cut(xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth): #Cutting stroke
     global output
     output += "G01 X"+str(xpos)+" Y"+str(ypos)+" Z" + str(zpos)+" F"+str(cspeed)+'\n'
     return(output)
-def move(xpos,ypos,zpos,shigh,h,fspeed,zdepth): #Free movement stroke
+def move(xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth): #Free movement stroke
     global output
     output += "G00 X" + str(xpos) + " Y" + str(ypos) + " Z" + str(zpos) + " F" + str(fspeed)+'\n'
     return(output)
 ########################################################################################################################
-def latA(xpos,ypos,shigh,h,fspeed,zdepth):
+def latA(xpos,ypos,shigh,h,fspeed,cspeed,zdepth):
     global output
     K=h/16
     zpos=shigh
@@ -82,42 +82,42 @@ def latA(xpos,ypos,shigh,h,fspeed,zdepth):
     #1
     xpos+=(8*K)-(11.8*K)/2
     ypos+=10*K
-    move(xpos,ypos,zpos,shigh,h,fspeed,zdepth)
+    move(xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth)
     #2#
     zpos=zdepth
-    cut(xpos,ypos,zpos,shigh,h,fspeed,zdepth)
+    cut(xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth)
     #3
     xpos+=(11.8*K)/2-(0.5*K)/2
     ypos+=13.9*K
-    cut(xpos,ypos,zpos,shigh,h,fspeed,zdepth)
+    cut(xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth)
     #4
     xpos+=0.5*K
-    cut(xpos,ypos,zpos,shigh,h,fspeed,zdepth)
+    cut(xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth)
     #5
     xpos += (11.8 * K) / 2 - (0.5 * K) / 2
     ypos -= 13.9 * K
-    cut(xpos,ypos,zpos,shigh,h,fspeed,zdepth)
+    cut(xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth)
     #6
     zpos=shigh
-    move(xpos,ypos,zpos,shigh,h,fspeed,zdepth)
+    move(xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth)
     #7
     xpos-=11.8*K
     xpos+=(11.8*K-(2*3.7*K-11.8*K))/2
     ypos+=3.7*K
-    move(xpos,ypos,zpos,shigh,h,fspeed,zdepth)
+    move(xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth)
     #8
     zpos=zdepth
-    cut(xpos,ypos,zpos,shigh,h,fspeed,zdepth)
+    cut(xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth)
     #9
     xpos+=2*3.7*K-11.8*K
-    cut(xpos,ypos,zpos,shigh,h,fspeed,zdepth)
+    cut(xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth)
     #10
     zpos=shigh
-    move(xpos,ypos,zpos,shigh,h,fspeed,zdepth)
+    move(xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth)
     #11
     xpos=startxpos+16*K
     ypos=startypos
-    move(xpos,ypos,zpos,shigh,h,fspeed,zdepth)
+    move(xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth)
     return (xpos,ypos)
 ########################################################################################################################
 
@@ -125,6 +125,6 @@ output+='G90 G94 G91.1 G40 G49 G17\nG21\nG28 G91 Z0.\nG90\nT3 M6\nS'
 output+=str(spindel)
 output+=' M3\nG17 G90 G94\nG54\n'
 
-xpos,ypos=latA(xpos,ypos,shigh,h,fspeed,zdepth)
+xpos,ypos=latA(xpos,ypos,shigh,h,fspeed,cspeed,zdepth)
 print (output)
 print(xpos,ypos,zpos)
