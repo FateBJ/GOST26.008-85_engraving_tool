@@ -1,7 +1,7 @@
 ##VARIABLE SECTION##
 output=str('') #Output file text
 mode=0 #mode. 0 - engraving, 1 - drawing
-h=16 #font high in mm
+h=20 #font high in mm
 origin=0 #position of the origin. 0 - bottom-center, 1 - bottom-left, 2 - bottom-right, 3 - center, 4 - center-left, 5 - center-right, 6 - upper-center, 7 - upper-left 8 - upper-right
 talign=0 #type of aligning. 0 - center, 1 - left, 2 - right.
 zdepth=-0.1 #z-depth. It uses negative numbers
@@ -72,6 +72,16 @@ def move(xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth): #Free movement stroke
     output += "G00 X" + str(xpos) + " Y" + str(ypos) + " Z" + str(zpos) + " F" + str(fspeed)+'\n'
     return(output)
 ########################################################################################################################
+#           2
+#          ###
+#         #   #
+#   1    #     #  3
+#       #       #
+#      #    4    #
+#     #############
+#    #             #
+#   #               #
+########################################################################################################################
 def latA(xpos,ypos,shigh,h,fspeed,cspeed,zdepth):
     global output
     K=h/16
@@ -79,52 +89,50 @@ def latA(xpos,ypos,shigh,h,fspeed,cspeed,zdepth):
     startxpos=xpos
     startypos=ypos
 
-    #1
-    xpos+=(8*K)-(11.8*K)/2
-    ypos+=10*K
+    #1 starting point
+    xpos+=((8*K)-((11.8*K)/2))
+    ypos+=(10*K)
     move(xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth)
-    #2#
+    #2 cutting in
     zpos=zdepth
     cut(xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth)
-    #3
-    xpos+=(11.8*K)/2-(0.5*K)/2
+    #3 1st element
+    xpos+=(((11.8*K)/2)-((0.5*K)/2))
     ypos+=13.9*K
     cut(xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth)
-    #4
-    xpos+=0.5*K
+    #4 2nd element
+    xpos+=(0.5*K)
     cut(xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth)
-    #5
-    xpos += (11.8 * K) / 2 - (0.5 * K) / 2
-    ypos -= 13.9 * K
+    #5 3rd element
+    xpos += (((11.8 * K) / 2) - (0.25 * K))
+    ypos -= (13.9 * K)
     cut(xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth)
-    #6
+    #6 cutting out
     zpos=shigh
     move(xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth)
-    #7
-    xpos-=11.8*K
-    xpos+=(11.8*K-(2*3.7*K-11.8*K))/2
-    ypos+=3.7*K
+    #7 moving to position for the 4th element
+    xpos-=(11.8 * K - ((((13.9 * K - 3.7 * K) * ((13.9 * K - 0.5 * K) / 2)) / 13.9 * K) * 2 + 0.5 * K))
+    ypos+=(3.7*K)
     move(xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth)
-    #8
+    #8 cutting in
     zpos=zdepth
     cut(xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth)
-    #9
-    xpos+=2*3.7*K-11.8*K
+    #9 4th element
+    xpos-=(((13.9*K-3.7*K)*((11.8*K-0.25*K)/2))/13.9*K)*2+0.5*K
     cut(xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth)
-    #10
+    #10 cutting out
     zpos=shigh
     move(xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth)
-    #11
+    #11 moving to the end position
     xpos=startxpos+16*K
     ypos=startypos
     move(xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth)
     return (xpos,ypos)
 ########################################################################################################################
 
-output+='G90 G94 G91.1 G40 G49 G17\nG21\nG28 G91 Z0.\nG90\nT3 M6\nS'
-output+=str(spindel)
-output+=' M3\nG17 G90 G94\nG54\n'
+#output+='G90 G94 G91.1 G40 G49 G17\nG21\nG28 G91 Z0.\nG90\nT3 M6\nS'
+#output+=str(spindel)
+#output+=' M3\nG17 G90 G94\nG54\n'
 
 xpos,ypos=latA(xpos,ypos,shigh,h,fspeed,cspeed,zdepth)
 print (output)
-print(xpos,ypos,zpos)
