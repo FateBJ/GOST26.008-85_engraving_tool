@@ -12,22 +12,11 @@ spindel=25000 #spindel rotation speed RPM
 xpos=0
 ypos=0
 zpos=10
-
-import latA
-
+text=''
 ##FETHING THE PARAMETERS##
 
-def input_params():
-    global mode
-    global h
-    global origin
-    global talign
-    global zdepth
-    global shigh
-    global cspeed
-    global fspeed
-    global spindel
-    global text
+def input_params(mode,h,origin,talign,zdepth,shigh,cspeed,fspeed,spindel,text):
+
     mode=int (input("Choose the mode.\n\n0-engraving\n1-drawing\n\n"))
     if mode!=1: mode=0
     h=float (input("Enter the high of the font.\n\n"))
@@ -63,15 +52,72 @@ def input_params():
     print("Z-depth: "+str(zdepth)+"mm \nSafe high: "+str(shigh)+"mm \nCutting speed: "+str(cspeed)+"mm/min\nFree movement speed: "+str(fspeed)+"mm/min\n")
     if mode==0: print("Spindle speed: "+str(cspeed)+" RPM\n"+"Text: "+text+"\n")
     again=input("Is that correct? Y/N\n")
-    if again=="Y" or again=="y": return ()
-    else: input_params()
-    return ()
-input_params()
+    if again=="Y" or again=="y": return (mode,h,origin,talign,zdepth,shigh,cspeed,fspeed,spindel,text)
+    else: mode,h,origin,talign,zdepth,shigh,cspeed,fspeed,spindel,text=input_params(mode,h,origin,talign,zdepth,shigh,cspeed,fspeed,spindel,text)
+    return (mode,h,origin,talign,zdepth,shigh,cspeed,fspeed,spindel,text)
+
+#mode,h,origin,talign,zdepth,shigh,cspeed,fspeed,spindel,text=input_params(mode,h,origin,talign,zdepth,shigh,cspeed,fspeed,spindel,text)
 
 ##VALIDATION##
 
 #placeholder#
 
 #DEBUG
-latA.main()
+def cut(xpos,ypos,zpos,shigh,h,fspeed,zdepth): #Cutting stroke
+    output += "G01 X"+str(xpos)+" Y"+str(ypos)+" Z" + str(zpos)+" F"+str(cspeed)+'\n'
+    return()
+def move(xpos,ypos,zpos,shigh,h,fspeed,zdepth): #Free movement stroke
+    output += "G00 X" + str(xpos) + " Y" + str(ypos) + " Z" + str(zpos) + " F" + str(fspeed)+'\n'
+    return()
+def latA(xpos,ypos,zpos,shigh,h,fspeed,zdepth,output):
+    K=h/16
+    zpos=shigh
+    startxpos=xpos
+    startypos=ypos
+
+    #1
+    xpos+=(8*K)-(11.8*K)/2
+    ypos+=10*K
+    move(xpos,ypos,zpos,shigh,h,fspeed,zdepth)
+    #2#
+    zpos=zdepth
+    cut(xpos,ypos,zpos,shigh,h,fspeed,zdepth)
+    #3
+    xpos+=(11.8*K)/2-(0.5*K)/2
+    ypos+=13.9*K
+    cut(xpos,ypos,zpos,shigh,h,fspeed,zdepth)
+    #4
+    xpos+=0.5*K
+    cut(xpos,ypos,zpos,shigh,h,fspeed,zdepth)
+    #5
+    xpos += (11.8 * K) / 2 - (0.5 * K) / 2
+    ypos -= 13.9 * K
+    cut(xpos,ypos,zpos,shigh,h,fspeed,zdepth)
+    #6
+    zpos=shigh
+    move(xpos,ypos,zpos,shigh,h,fspeed,zdepth)
+    #7
+    xpos-=11.8*K
+    xpos+=(11.8*K-(2*3.7*K-11.8*K))/2
+    ypos+=3.7*K
+    move(xpos,ypos,zpos,shigh,h,fspeed,zdepth)
+    #8
+    zpos=zdepth
+    cut(xpos,ypos,zpos,shigh,h,fspeed,zdepth)
+    #9
+    xpos+=2*3.7*K-11.8*K
+    cut(xpos,ypos,zpos,shigh,h,fspeed,zdepth)
+    #10
+    zpos=shigh
+    move(xpos,ypos,zpos,shigh,h,fspeed,zdepth)
+    #11
+    xpos=startxpos+16*K
+    ypos=startypos
+    move(xpos,ypos,zpos,shigh,h,fspeed,zdepth)
+    return (output)
+
+output+='G90 G94 G91.1 G40 G49 G17\nG21\nG28 G91 Z0.\nG90\nT3 M6\nS'
+output+=str(spindel)
+output+=' M3\nG17 G90 G94\nG54'
+output+=latA(xpos,ypos,zpos,shigh,h,fspeed,zdepth,output)
 print (output)
