@@ -64,12 +64,16 @@ def input_params(mode,h,origin,talign,zdepth,shigh,cspeed,fspeed,spindel,text):
 
 #DEBUG
 def cut(xpos,ypos,zpos,shigh,h,fspeed,zdepth): #Cutting stroke
+    global output
     output += "G01 X"+str(xpos)+" Y"+str(ypos)+" Z" + str(zpos)+" F"+str(cspeed)+'\n'
-    return()
+    return(output)
 def move(xpos,ypos,zpos,shigh,h,fspeed,zdepth): #Free movement stroke
+    global output
     output += "G00 X" + str(xpos) + " Y" + str(ypos) + " Z" + str(zpos) + " F" + str(fspeed)+'\n'
-    return()
-def latA(xpos,ypos,zpos,shigh,h,fspeed,zdepth,output):
+    return(output)
+########################################################################################################################
+def latA(xpos,ypos,shigh,h,fspeed,zdepth):
+    global output
     K=h/16
     zpos=shigh
     startxpos=xpos
@@ -114,10 +118,13 @@ def latA(xpos,ypos,zpos,shigh,h,fspeed,zdepth,output):
     xpos=startxpos+16*K
     ypos=startypos
     move(xpos,ypos,zpos,shigh,h,fspeed,zdepth)
-    return (output)
+    return (xpos,ypos)
+########################################################################################################################
 
 output+='G90 G94 G91.1 G40 G49 G17\nG21\nG28 G91 Z0.\nG90\nT3 M6\nS'
 output+=str(spindel)
-output+=' M3\nG17 G90 G94\nG54'
-output+=latA(xpos,ypos,zpos,shigh,h,fspeed,zdepth,output)
+output+=' M3\nG17 G90 G94\nG54\n'
+
+xpos,ypos=latA(xpos,ypos,shigh,h,fspeed,zdepth)
 print (output)
+print(xpos,ypos,zpos)
