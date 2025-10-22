@@ -1,7 +1,7 @@
 ##VARIABLE SECTION##
 output=str('') #Output file text
 mode=0 #mode. 0 - engraving, 1 - drawing
-h=20 #font high in mm
+h=160 #font high in mm
 origin=0 #position of the origin. 0 - bottom-center, 1 - bottom-left, 2 - bottom-right, 3 - center, 4 - center-left, 5 - center-right, 6 - upper-center, 7 - upper-left 8 - upper-right
 talign=0 #type of aligning. 0 - center, 1 - left, 2 - right.
 zdepth=-0.1 #z-depth. It uses negative numbers
@@ -111,14 +111,14 @@ def latA(xpos,ypos,shigh,h,fspeed,cspeed,zdepth):
     zpos=shigh
     move(xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth)
     #7 moving to position for the 4th element
-    xpos-=(11.8 * K - ((((13.9 * K - 3.7 * K) * ((13.9 * K - 0.5 * K) / 2)) / 13.9 * K) * 2 + 0.5 * K))
+    xpos-=(11.8 * K - (0.5*K+2*((13.9 * K - 3.7 * K) * ((11.8 * K - 0.5 * K) / 2) / (13.9 * K))))/2
     ypos+=(3.7*K)
     move(xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth)
     #8 cutting in
     zpos=zdepth
     cut(xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth)
     #9 4th element
-    xpos-=(((13.9*K-3.7*K)*((11.8*K-0.25*K)/2))/13.9*K)*2+0.5*K
+    xpos-=0.5*K+2*((13.9 * K - 3.7 * K) * ((11.8 * K - 0.5 * K) / 2) / (13.9 * K))
     cut(xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth)
     #10 cutting out
     zpos=shigh
