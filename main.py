@@ -1,7 +1,7 @@
 ##VARIABLE SECTION##
 output=str('') #Output file text
 mode=0 #mode. 0 - engraving, 1 - drawing
-h=160 #font high in mm
+h=20 #font high in mm
 origin=0 #position of the origin. 0 - bottom-center, 1 - bottom-left, 2 - bottom-right, 3 - center, 4 - center-left, 5 - center-right, 6 - upper-center, 7 - upper-left 8 - upper-right
 talign=0 #type of aligning. 0 - center, 1 - left, 2 - right.
 zdepth=-0.1 #z-depth. It uses negative numbers
@@ -63,14 +63,28 @@ def input_params(mode,h,origin,talign,zdepth,shigh,cspeed,fspeed,spindel,text):
 #placeholder#
 
 #DEBUG
-def cut(xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth): #Cutting stroke
-    global output
+def cut(): #Cutting stroke
+    global output,xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth
     output += "G01 X"+str(xpos)+" Y"+str(ypos)+" Z" + str(zpos)+" F"+str(cspeed)+'\n'
-    return(output)
-def move(xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth): #Free movement stroke
-    global output
+    return()
+def move(): #Free movement stroke
+    global output,xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth
     output += "G00 X" + str(xpos) + " Y" + str(ypos) + " Z" + str(zpos) + " F" + str(fspeed)+'\n'
-    return(output)
+    return()
+def arccw(i,j,r): #Cutting CW arc
+    global output,xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth
+    output+="G02 X"+str (xpos)+" Y"+str(ypos)+" I"+str(i)+" J"+str (j)+" R"+str(r)+" F"+str(cspeed)+"\n"
+    return()
+def arcccw(i,j,r):  # Cutting CCW arc
+    global output,xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth
+    output+="G03 X"+str (xpos)+" Y"+str(ypos)+" I"+str(i)+" J"+str (j)+" R"+str(r)+" F"+str(cspeed)+"\n"
+    return ()
+def cutin():
+    global xpos,ypos,zdepth,output,cspeed
+    output += "G01 X"+str(xpos)+" Y"+str(ypos)+" Z" + str(zdepth)+" F"+str(cspeed)+'\n'
+def cutout():
+    global xpos, ypos, shigh, output, fspeed
+    output += "G01 X" + str(xpos) + " Y" + str(ypos) + " Z" + str(shigh) + " F" + str(fspeed) + '\n'
 ########################################################################################################################
 #           2
 #          ###
@@ -82,66 +96,388 @@ def move(xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth): #Free movement stroke
 #    #             #
 #   #               #
 ########################################################################################################################
-def latA(xpos,ypos,shigh,h,fspeed,cspeed,zdepth):
-    global output
+def latA():
+    global output,xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth
     K=h/16
     zpos=shigh
     startxpos=xpos
     startypos=ypos
 
-    #1 starting point
+    #1 start point
     xpos+=((8*K)-((11.8*K)/2))
     ypos+=(10*K)
-    move(xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth)
+    move()
     #2 cutting in
     zpos=zdepth
-    cut(xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth)
+    cut()
     #3 1st element
     xpos+=(((11.8*K)/2)-((0.5*K)/2))
     ypos+=13.9*K
-    cut(xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth)
+    cut()
     #4 2nd element
     xpos+=(0.5*K)
-    cut(xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth)
+    cut()
     #5 3rd element
     xpos += (((11.8 * K) / 2) - (0.25 * K))
     ypos -= (13.9 * K)
-    cut(xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth)
+    cut()
     #6 cutting out
     zpos=shigh
-    move(xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth)
+    move()
     #7 moving to position for the 4th element
     xpos-=(11.8 * K - (0.5*K+2*((13.9 * K - 3.7 * K) * ((11.8 * K - 0.5 * K) / 2) / (13.9 * K))))/2
     ypos+=(3.7*K)
-    move(xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth)
+    move()
     #8 cutting in
     zpos=zdepth
-    cut(xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth)
+    cut()
     #9 4th element
     xpos-=0.5*K+2*((13.9 * K - 3.7 * K) * ((11.8 * K - 0.5 * K) / 2) / (13.9 * K))
-    cut(xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth)
+    cut()
     #10 cutting out
     zpos=shigh
-    move(xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth)
+    move()
     #11 moving to the end position
     xpos=startxpos+16*K
     ypos=startypos
-    move(xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth)
-    return (xpos,ypos)
+    move()
+    return ()
 ########################################################################################################################
-#
-#
-#
-#
-#
-#
-#
-#
+#          1
+#   ###############
+#   #
+#   #      5
+# 2 ###############
+#   #               #
+#   #          +     #  4
+#   #               #
+#   ###############
+#           3
+########################################################################################################################
+def cyrB():
+    global output,xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth
+    K=h/16
+    zpos=shigh
+    startxpos=xpos
+    startypos=ypos
+
+    #1 going to the start point
+    xpos+=2.75*K+9.1*K
+    ypos+=10.3*K+13.5*K
+    move()
+    #2 cutting in
+    cutin()
+    #3 cutting 1st element
+    xpos-=9.1*K
+    cut()
+    #4 cutting 2nd element
+    ypos-=13.5*K
+    cut()
+    #5 cutting 3rd element
+    xpos+=9.6*K-3.5*K
+    cut()
+    #6 cutting 4th element
+    r = 3.5 * K
+    ypos+=r*2
+    i=0
+    j=ypos-r
+    arcccw(i,j,r)
+    #7 cutting 5th element
+    xpos-=9.6*K-3.5*K
+    cut()
+    #8 cutting out
+    cutout()
+    #8 moving to the end position
+    xpos=startxpos+14.4*K
+    ypos=startypos
+    move()
+    return ()
+########################################################################################################################
+#       4
+#   #########
+#   #        #  3
+#   #   6    #
+# 5 #########
+#   #        #
+#   #         # 2
+#   #        #
+#   #########
+#       1
+########################################################################################################################
+def latB():
+    global output, xpos, ypos, zpos, shigh, h, fspeed, cspeed, zdepth
+    K = h / 16
+    zpos = shigh
+    startxpos = xpos
+    startypos = ypos
+
+    #1 going to the start point
+    xpos+=2.75*K
+    ypos+=10.2*K
+    move()
+    # cutting in
+    cutin()
+    # 1st element
+    xpos+=9.6*K-3.5*K
+    cut()
+    # 2nd element
+    r=3.5*K
+    ypos += r * 2
+    i = 0
+    j = ypos - r
+    arcccw(i,j,r)
+    # 3rd element
+    r=3.25*K
+    ypos += r * 2
+    i = 0
+    j = ypos - r
+    arcccw(i, j, r)
+    # 4th element
+    xpos-=9.4*K-3.25*K
+    cut()
+    # 5th element
+    ypos-=13.5*K
+    cut()
+    # cutting out
+    cutout()
+    # going to the 6th element
+    ypos+=7*K
+    # cutting in
+    cutin()
+    # 6th element
+    xpos+=9.6*K-3.5*K
+    cut()
+    # cutting out
+    cutout()
+    # 8 moving to the end position
+    xpos = startxpos + 14.4 * K
+    ypos = startypos
+    move()
+    return()
+########################################################################################################################
+#         2
+#   ############
+#   #
+#   #
+# 1 #
+#   #
+#   #
+#   #
+#   #
 #
 ########################################################################################################################
+def cyrG():
+    global output, xpos, ypos, zpos, shigh, h, fspeed, cspeed, zdepth
+    K = h / 16
+    zpos = shigh
+    startxpos = xpos
+    startypos = ypos
+
+    #1 going to the start point
+    xpos+=2.75*K
+    ypos+=10*K
+    move()
+    #2 cutting in
+    cutin()
+    #3 1st element
+    ypos+=13.7*K
+    cut()
+    #4 2nd element
+    xpos+=8*K
+    cut()
+    #5 cutting out
+    cutout()
+    #6 8 moving to the end position
+    xpos = startxpos + 14.4 * K
+    ypos = startypos
+    move()
+    return()
+########################################################################################################################
+#            5
+#          #####
+#         #     #
+#        #       #
+#     4 #         # 6
+#      #           #
+#     #      2      #
+#   ###################
+# 1 #                 # 3
+#
+########################################################################################################################
+def cyrD():
+    global output, xpos, ypos, zpos, shigh, h, fspeed, cspeed, zdepth
+    K = h / 16
+    zpos = shigh
+    startxpos = xpos
+    startypos = ypos
+    x1=startxpos+8.8*K-(13.6*K)/2
+    y1=startypos+10.2*K-4.2*K
+
+    #1 going to the start point
+    xpos=x1
+    ypos=y1
+    move()
+    #2 cutting in
+    cutin()
+    #3 1st element
+    ypos+=4.2*K
+    cut()
+    #4 2nd
+    xpos+=13.6*K
+    cut()
+    #5 3rd
+    ypos-=4.2*K
+    cut()
+    #6 cutting out
+    cutout()
+    #7 moving to 4th
+    xpos-=(13.6-11.2)*K/2+11.2*K
+    ypos+=4.2*K
+    move()
+    #8 cutting in
+    cutin()
+    #9 4th
+    xpos+=11.2/2*K-0.5/2*K
+    ypos+=13.7*K
+    cut()
+    #10 5th
+    xpos+=0.5*K
+    cut()
+    #11 6th
+    xpos+=11.2/2*K-0.5/2*K
+    ypos-=13.7*K
+    cut()
+    #5 cutting out
+    cutout()
+    #6 8 moving to the end position
+    xpos = startxpos + 17.6 * K
+    ypos = startypos
+    move()
+    return()
+########################################################################################################################
+#       3
+#   #############
+#   #
+#   #
+#  2#   4
+#   #########
+#   #
+#   #
+#   #############
+#         1
+########################################################################################################################
+def latE():
+    global output, xpos, ypos, zpos, shigh, h, fspeed, cspeed, zdepth
+    K = h / 16
+    zpos = shigh
+    startxpos = xpos
+    startypos = ypos
+
+    #1 going to the start point
+    xpos+=2.75*K+8.8*K
+    ypos+=10.2*K
+    move()
+    #2 cutting in
+    cutin()
+    #3 1st element
+    xpos-=8.8*K
+    cut()
+    #4 2nd element
+    ypos+=13.5*K
+    cut()
+    #5 3rd element
+    xpos+=8.8*K
+    cut()
+    #6 cutting out
+    cutout()
+    #7 going to 4th
+    xpos-=8.8*K
+    ypos-=13.5*K-6.8*K
+    move()
+    #8 cutting in
+    cutin()
+    #9 4th
+    xpos+=8*K
+    cut()
+    #10 cutting out
+    cutout()
+    #11 moving to the end position
+    xpos = startxpos + 13.6 * K
+    ypos = startypos
+    move()
+    return()
+########################################################################################################################
+#          3
+#    #     #     #
+#  2  #    #    #  5
+#      #   #   #
+#       #  #  #
+#  1   #   #   #  4
+#     #    #    #
+#    #     #     #
+#
+########################################################################################################################
+def cyrJ():
+    global output, xpos, ypos, zpos, shigh, h, fspeed, cspeed, zdepth
+    K = h / 16
+    zpos = shigh
+    startxpos = xpos
+    startypos = ypos
+
+    #1 going to the start point
+    xpos+=9.6*K-15*K/2
+    ypos+=10*K
+    move()
+    #2 cutting in
+    cutin()
+    #3 1st element
+    xpos+=4.5*K
+    ypos+=7.2*K
+    cut()
+    #4 2nd element
+    xpos-=4.5*K
+    ypos+=6.7*K
+    cut()
+    #5 cutting out
+    cutout()
+    #6 going to 3rd
+    xpos+=4.5*K+3*K
+    move()
+    #7 cutting in
+    cutin()
+    #8 3rd element
+    ypos-=13.9*K
+    cut()
+    #9 cutting out
+    cutout()
+    #10 going to 4th
+    xpos += 4.5 * K + 3 * K
+    move()
+    #11 cutting in
+    cutin()
+    #12 4th
+    xpos -= 4.5 * K
+    ypos += 7.2 * K
+    cut()
+    #13 5th
+    xpos+=4.5*K
+    ypos+=6.7*K
+    cut()
+    # cutting out
+    cutout()
+    # 8 moving to the end position
+    xpos = startxpos + 19.2 * K
+    ypos = startypos
+    move()
+    return()
+
+
+
+
 #output+='G90 G94 G91.1 G40 G49 G17\nG21\nG28 G91 Z0.\nG90\nT3 M6\nS'
 #output+=str(spindel)
 #output+=' M3\nG17 G90 G94\nG54\n'
 
-xpos,ypos=latA(xpos,ypos,shigh,h,fspeed,cspeed,zdepth)
+cyrJ()
+
 print (output)
