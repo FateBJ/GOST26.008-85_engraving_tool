@@ -470,7 +470,40 @@ def cyrJ():
     ypos = startypos
     move()
     return()
+########################################################################################################################
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+########################################################################################################################
+def cyrZ():
+    global output, xpos, ypos, zpos, shigh, h, fspeed, cspeed, zdepth
+    K = h / 16
+    zpos = shigh
+    startxpos = xpos
+    startypos = ypos
 
+    #1 going to the start point
+    xpos+=
+    ypos+=
+    move()
+    #2 cutting in
+    cutin()
+    #3 1st element
+
+    # cutting out
+    cutout()
+    # moving to the end position
+    xpos = startxpos + 13.6 * K
+    ypos = startypos
+    move()
+    return()
 
 
 
@@ -478,6 +511,6 @@ def cyrJ():
 #output+=str(spindel)
 #output+=' M3\nG17 G90 G94\nG54\n'
 
-cyrJ()
+cyrZ()
 
 print (output)
