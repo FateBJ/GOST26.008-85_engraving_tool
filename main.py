@@ -995,12 +995,12 @@ def latP():
 ########################################################################################################################
 #       3
 #      ######
-#   #           #
+#   #          #
 #   #
 #  2#
 #   #
 #   #
-#   #           #
+#   #          #
 #      ######
 #       1
 ########################################################################################################################
@@ -1012,43 +1012,137 @@ def latC():
     startypos = ypos
 
     #1 going to the start point
-    xpos+=11.886896*K
-    ypos+=11.8548387*K
+    xpos+=12.25*K
+    ypos+=12.3660866*K
     move()
     #2 cutting in
     cutin()
-    # 6 4th
+    #3 4th
     r = 5 * K
     xpos = startxpos + 4.113104 * K
-    i = (8 - 11.886896) * K
-    j = (15 - 11.8548387) * K
+    ypos = startypos +11.8548387*K
+    i = (8 - 12.25) * K
+    j = (15 - 12.3660866) * K
     arccw(i, j, r)
-    #3 1st element
+    #4 1st element
     r=8.1*K
     ypos=startypos+22.0451613*K
     i=(10.4098755+4.113104)*K/2
     j=(22.0451613-11.8548387)*K/2
     arccw(i, j, r)
-    #4 2nd element
+    #5 2nd element
     r=5*K
-    xpos=startxpos+11.886896*K
+    xpos=startxpos+12.25*K
+    ypos=startypos+21.5339134*K
     i=3.886896*K
     j=(18.9-22.0451613)*K
     arccw(i, j, r)
-    #5 3rd
-
-
-    # cutting out
+    #6 cutting out
     cutout()
-    # moving to the end position
-    xpos = startxpos + 16 * K
+    #7 moving to the end position
+    xpos = startxpos + 14.4 * K
     ypos = startypos
     move()
     return()
+########################################################################################################################
+#       2
+#   ##########
+#       #
+#       #
+#       #
+#       #  1
+#       #
+#       #
+#       #
+#
+########################################################################################################################
+def latT():
+    global output, xpos, ypos, zpos, shigh, h, fspeed, cspeed, zdepth
+    K = h / 16
+    zpos = shigh
+    startxpos = xpos
+    startypos = ypos
+
+    #1 going to the start point
+    xpos+=7.2*K
+    ypos+=10*K
+    move()
+    #2 cutting in
+    cutin()
+    #3 1st element
+    ypos+=13.7*K
+    cut()
+    #4 cutting out
+    cutout()
+    #5 goto 2
+    xpos-=5.15*K
+    move()
+    #6 cutting in
+    cutin()
+    #7 2nd
+    xpos+=10.3*K
+    cut()
+    # cutting out
+    cutout()
+    # moving to the end position
+    xpos = startxpos + 14.4 * K
+    ypos = startypos
+    move()
+    return()
+########################################################################################################################
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+########################################################################################################################
+def cyrU():
+    global output, xpos, ypos, zpos, shigh, h, fspeed, cspeed, zdepth
+    K = h / 16
+    zpos = shigh
+    startxpos = xpos
+    startypos = ypos
+
+    #1 going to the start point
+    xpos+=(12.3-62.55/8.8)*K
+    ypos+=10*K
+    move()
+    #2 cutting in
+    cutin()
+    #3 1st element
+    xpos+=(62.55/8.5)*K
+    ypos+=13.9*K
+    cut()
+    cutout()
+    xpos=startxpos+2.1*K
+    move()
+    cutin()
+    xpos+=5.7*K
+    ypos-=8.8*K
+    cut()
+    # cutting out
+    cutout()
+    # moving to the end position
+    xpos = startxpos + 14.4 * K
+    ypos = startypos
+    move()
+    return()
+
+########################################################################################################################
+
+
+
+
+########################################################################################################################
 #output+='G90 G94 G91.1 G40 G49 G17\nG21\nG28 G91 Z0.\nG90\nT3 M6\nS'
 #output+=str(spindel)
 #output+=' M3\nG17 G90 G94\nG54\n'
 
-latC()
+cyrU()
 
 print (output)
