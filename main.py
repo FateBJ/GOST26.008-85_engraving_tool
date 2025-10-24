@@ -418,7 +418,7 @@ def latE():
 #    #     #     #
 #
 ########################################################################################################################
-def cyrJ():
+def cyrZH():
     global output, xpos, ypos, zpos, shigh, h, fspeed, cspeed, zdepth
     K = h / 16
     zpos = shigh
@@ -602,7 +602,7 @@ def cyrI():
 #   # #              #
 #    2
 ########################################################################################################################
-def cyrY():
+def cyrJ():
     global output, xpos, ypos, zpos, shigh, h, fspeed, cspeed, zdepth
     K = h / 16
     zpos = shigh
@@ -1322,11 +1322,329 @@ def cyrCH():
     #
     cutout()
     #
-    ypos
+    ypos=startypos+17.542223*K
+    move()
+    #
+    cutin()
+    #
+    r=4.8*K
+    xpos-=8.5*K
+    ypos=startypos+20.6*K
+    i=-3.7*K
+    j=8.1*K-(startypos+17.542223*K)
+    arccw(i, j, r)
+    #
+    ypos+=3.3*K
     # cutting out
     cutout()
     # moving to the end position
     xpos = startxpos + 13.6 * K
+    ypos = startypos
+    move()
+    return()
+
+########################################################################################################################
+#
+#   #       #       #
+#   #       #       #
+#   #       #       #
+# 1 #       #   4   #  3
+#   #       #       #
+#   #       #       #
+#   #       #       #
+#   #################
+#           2
+########################################################################################################################
+def cyrSH():
+    global output, xpos, ypos, zpos, shigh, h, fspeed, cspeed, zdepth
+    K = h / 16
+    zpos = shigh
+    startxpos = xpos
+    startypos = ypos
+
+    #1 going to the start point
+    xpos+=2.75*K
+    ypos+=23.9*K
+    move()
+    #2 cutting in
+    cutin()
+    #3 1st element
+    ypos-=13.7*K
+    cut()
+    #
+    xpos+=14.5*K
+    cut()
+    #
+    ypos+=13.7*K
+    cut()
+    #
+    cutout()
+    #
+    xpos-=7.25*K
+    move()
+    #
+    cutin()
+    #
+    ypos-=13.7*K
+    cut()
+    # cutting out
+    cutout()
+    # moving to the end position
+    xpos = startxpos + 20 * K
+    ypos = startypos
+    move()
+    return()
+########################################################################################################################
+#
+#   #       #       #
+#   #       #       #
+#   #       #       #
+# 1 #       #   4   #  3
+#   #       #       #
+#   #       #       #
+#   #       #       #
+#   ###################
+#           2         #
+########################################################################################################################
+def cyrSCH():
+    global output, xpos, ypos, zpos, shigh, h, fspeed, cspeed, zdepth
+    K = h / 16
+    zpos = shigh
+    startxpos = xpos
+    startypos = ypos
+
+    #1 going to the start point
+    xpos+=2.75*K
+    ypos+=23.9*K
+    move()
+    #2 cutting in
+    cutin()
+    #3 1st element
+    ypos-=13.7*K
+    cut()
+    #
+    xpos+=14.5*K
+    cut()
+    #
+    ypos+=13.7*K
+    cut()
+    #
+    cutout()
+    #
+    xpos-=7.25*K
+    move()
+    #
+    cutin()
+    #
+    ypos-=13.7*K
+    cut()
+    #
+    cutout()
+    #
+    xpos+=7.25*K
+    move()
+    #
+    cutin()
+    #
+    xpos+=1.5*K
+    cut()
+    #
+    ypos-=4.3*K
+    cut()
+    # cutting out
+    cutout()
+    # moving to the end position
+    xpos = startxpos + 20.8 * K
+    ypos = startypos
+    move()
+    return()
+
+
+########################################################################################################################
+#   1
+#  ##
+#   #
+#   #  5
+#   #######
+# 2 #       #
+#   #       # 4
+#   #       #
+#   #######
+#       3
+########################################################################################################################
+def cyrHS():
+    global output, xpos, ypos, zpos, shigh, h, fspeed, cspeed, zdepth
+    K = h / 16
+    zpos = shigh
+    startxpos = xpos
+    startypos = ypos
+
+    # 1 going to the start point
+    xpos += 2 * K
+    ypos += 23.7 * K
+    move()
+    # 2 cutting in
+    cutin()
+    # 3 1st element
+    xpos+=2.4*K
+    cut()
+    #
+    ypos-=13.5*K
+    cut()
+    #
+    xpos+=6.1*K
+    cut()
+    #
+    r=3.5*K
+    ypos+=7*K
+    i=0
+    j=3.5
+    arcccw(i, j, r)
+    #
+    xpos-=6.1*K
+    cut()
+    # cutting out
+    cutout()
+    # moving to the end position
+    xpos = startxpos + 16 *K
+    ypos = startypos
+    move()
+    return ()
+########################################################################################################################
+#
+#   #               #
+#   #               #
+#   #  4            #
+#   #######         #  5
+# 1 #       #       #
+#   #       # 3     #
+#   #       #       #
+#   #######         #
+#       2
+########################################################################################################################
+def cyrY():
+    global output, xpos, ypos, zpos, shigh, h, fspeed, cspeed, zdepth
+    K = h / 16
+    zpos = shigh
+    startxpos = xpos
+    startypos = ypos
+
+    # 1 going to the start point
+    xpos += 2.75 * K
+    ypos += 23.9 * K
+    move()
+    # 2 cutting in
+    cutin()
+    # 3 1st element
+    ypos-=13.7*K
+    cut()
+    #
+    xpos+=6.1*K
+    cut()
+    #
+    r=3.5*K
+    ypos+=7*K
+    i=0
+    j=3.5
+    arcccw(i, j, r)
+    #
+    xpos-=6.1*K
+    cut()
+    #
+    cutout()
+    #
+    xpos+=14.5*K
+    ypos+=6.7*K
+    move()
+    #
+    cutin()
+    ypos-=13.9*K
+    cut()
+    # cutting out
+    cutout()
+    # moving to the end position
+    xpos = startxpos + 20 *K
+    ypos = startypos
+    move()
+    return ()
+########################################################################################################################
+#
+#   #
+#   #
+#   #  4
+#   #######
+# 1 #       #
+#   #       # 3
+#   #       #
+#   #######
+#       2
+########################################################################################################################
+def cyrSS():
+    global output, xpos, ypos, zpos, shigh, h, fspeed, cspeed, zdepth
+    K = h / 16
+    zpos = shigh
+    startxpos = xpos
+    startypos = ypos
+
+    # 1 going to the start point
+    xpos += 2.75 * K
+    ypos += 23.9 * K
+    move()
+    # 2 cutting in
+    cutin()
+    # 3 1st element
+    ypos-=13.7*K
+    cut()
+    #
+    xpos+=6.1*K
+    cut()
+    #
+    r=3.5*K
+    ypos+=7*K
+    i=0
+    j=3.5
+    arcccw(i, j, r)
+    #
+    xpos-=6.1*K
+    cut()
+    # cutting out
+    cutout()
+    # moving to the end position
+    xpos = startxpos + 14.4 * K
+    ypos = startypos
+    move()
+    return ()
+########################################################################################################################
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+########################################################################################################################
+def cyrJE():
+    global output, xpos, ypos, zpos, shigh, h, fspeed, cspeed, zdepth
+    K = h / 16
+    zpos = shigh
+    startxpos = xpos
+    startypos = ypos
+
+    #1 going to the start point
+    xpos+=2.75*K
+    ypos+=10*K
+    move()
+    #2 cutting in
+    cutin()
+    #3 1st element
+
+    # cutting out
+    cutout()
+    # moving to the end position
+    xpos = startxpos + 14.4 * K
     ypos = startypos
     move()
     return()
@@ -1339,7 +1657,7 @@ def cyrCH():
 #output+=str(spindel)
 #output+=' M3\nG17 G90 G94\nG54\n'
 
-cyrCH()
+cyrJE()
 
 print (output)
 pyperclip.copy(output)
