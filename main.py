@@ -2,8 +2,8 @@
 import pyperclip
 output=str('') #Output file text
 mode=0 #mode. 0 - engraving, 1 - drawing
-h=26 #font high in mm
-origin=0 #position of the origin. 0 - bottom-center, 1 - bottom-left, 2 - bottom-right, 3 - center, 4 - center-left, 5 - center-right, 6 - upper-center, 7 - upper-left 8 - upper-right
+h=17 #font high in mm
+origin=3 #position of the origin. 0 - bottom-center, 1 - bottom-left, 2 - bottom-right, 3 - center, 4 - center-left, 5 - center-right, 6 - upper-center, 7 - upper-left 8 - upper-right
 talign=0 #type of aligning. 0 - center, 1 - left, 2 - right.
 zdepth=-0.1 #z-depth. It uses negative numbers
 shigh=1 #safe high Z mm
@@ -13,7 +13,7 @@ spindel=25000 #spindel rotation speed RPM
 xpos=0.0
 ypos=0.0
 zpos=10.0
-text=''
+text='АБВГДЕЖЗИКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'
 ##FETHING THE PARAMETERS##
 
 def input_params(mode,h,origin,talign,zdepth,shigh,cspeed,fspeed,spindel,text):
@@ -51,7 +51,7 @@ def input_params(mode,h,origin,talign,zdepth,shigh,cspeed,fspeed,spindel,text):
     if talign==1: print("to left\n")
     if talign==2: print("to right\n")
     print("Z-depth: "+str(zdepth)+"mm \nSafe high: "+str(shigh)+"mm \nCutting speed: "+str(cspeed)+"mm/min\nFree movement speed: "+str(fspeed)+"mm/min\n")
-    if mode==0: print("Spindle speed: "+str(cspeed)+" RPM\n"+"Text: "+text+"\n")
+    if mode==0: print("Spindle speed: "+str(cspeed)+" RPM\n"+"letter: "+text+"\n")
     again=input("Is that correct? Y/N\n")
     if again=="Y" or again=="y": return (mode,h,origin,talign,zdepth,shigh,cspeed,fspeed,spindel,text)
     else: mode,h,origin,talign,zdepth,shigh,cspeed,fspeed,spindel,text=input_params(mode,h,origin,talign,zdepth,shigh,cspeed,fspeed,spindel,text)
@@ -163,8 +163,8 @@ def cyrB():
     startypos=ypos
 
     #1 going to the start point
-    xpos+=2.75*K+9.1*K
-    ypos+=10.3*K+13.5*K
+    xpos+=(2.75+9.1)*K
+    ypos+=(10.2+13.5)*K
     move()
     #2 cutting in
     cutin()
@@ -175,16 +175,16 @@ def cyrB():
     ypos-=13.5*K
     cut()
     #5 cutting 3rd element
-    xpos+=9.6*K-3.5*K
+    xpos+=(9.6-3.5)*K
     cut()
     #6 cutting 4th element
     r = 3.5 * K
     ypos+=r*2
     i=0
-    j=ypos-r
+    j=ypos+r
     arcccw(i,j,r)
     #7 cutting 5th element
-    xpos-=9.6*K-3.5*K
+    xpos-=(9.6-3.5)*K
     cut()
     #8 cutting out
     cutout()
@@ -289,7 +289,7 @@ def cyrG():
     #5 cutting out
     cutout()
     #6 8 moving to the end position
-    xpos = startxpos + 14.4 * K
+    xpos = startxpos + 12.8 * K
     ypos = startypos
     move()
     return()
@@ -1615,18 +1615,82 @@ def cyrSS():
     move()
     return ()
 ########################################################################################################################
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
+#       3
+#     #########
+#   #           #
+#            4   #
+#        #########
+#                #  2
+#                #
+#   #           #
+#     #########
+#       1
 ########################################################################################################################
 def cyrJE():
+    global output, xpos, ypos, zpos, shigh, h, fspeed, cspeed, zdepth
+    K = h / 16
+    zpos = shigh
+    startxpos = xpos
+    startypos = ypos
+
+    #1 going to the start point
+    xpos+=2.15*K
+    ypos+=12.366*K
+    move()
+    #2 cutting in
+    cutin()
+    #3 1st element
+    r=5*K
+    xpos=startxpos+10.19*K
+    ypos=startypos+11.739*K
+    i=6.4*K-10.19*K
+    j=15*K-11.739*K
+    arcccw(i, j, r)
+    #
+    r=8.1*K
+    ypos=startypos+22.304*K
+    j=17.022*K-22.304*K
+    i=4.05*K-10.19*K
+    arcccw(i, j, r)
+    #
+    r=5*K
+    xpos=startxpos+2.15*K
+    ypos=startypos+21.677*K
+    i=6.4*K-2.15*K
+    j=19.044*K-21.677*K
+    arcccw(i,j,r)
+    #
+    cutout()
+    #
+    xpos=startxpos+4.15*K
+    ypos=startypos+17.022*K
+    move()
+    #
+    cutin()
+    #
+    xpos=startxpos+12.15*K
+    ypos=startypos+17.022*K
+    cut()
+    # cutting out
+    cutout()
+    # moving to the end position
+    xpos = startxpos + 14.4 * K
+    ypos = startypos
+    move()
+    return()
+########################################################################################################################
+#           4
+#   #    3  ##
+#   #    #      #
+#   # 2 #        #
+#   #####        #  5
+#   #   #        #
+# 1 #   #        #
+#   #  7 #      #
+#   #       ##
+#           6
+########################################################################################################################
+def cyrJU():
     global output, xpos, ypos, zpos, shigh, h, fspeed, cspeed, zdepth
     K = h / 16
     zpos = shigh
@@ -1640,7 +1704,108 @@ def cyrJE():
     #2 cutting in
     cutin()
     #3 1st element
+    ypos+=13.9*K
+    cut()
+    #
+    cutout()
+    #
+    ypos-=6.95*K
+    move()
+    #
+    cutin()
+    #
+    xpos=startxpos+7.25*K
+    cut()
+    #
+    r=8.1*K
+    xpos=startxpos+8.954*K
+    ypos=startypos+21.920*K
+    i=15.35*K-7.25*K
+    j=(21.920-16.95)*K
+    arccw(i, j, r)
+    #
+    r=5.124*K
+    xpos=startxpos+17.046*K
+    i=(13-17.046)*K
+    j=(18.776-21.920)*K
+    arccw(i, j, r)
+    #
+    r=8.1*K
+    ypos=startypos+11.98*K
+    i=(17.046-15.35)*K
+    j=(11.980-16.95)*K
+    arccw(i, j, r)
+    #
+    r=5.124*K
+    xpos=startxpos+8.954*K
+    i=(13-17.046)*K
+    j=(15.124-11.980)*K
+    arccw(i, j, r)
+    #
+    r=8.1*K
+    xpos=startxpos+7.25*K
+    ypos=startypos+16.95*K
+    i=(15.35-7.25)*K
+    j=0
+    arccw(i, j, r)
+    # cutting out
+    cutout()
+    # moving to the end position
+    xpos = startxpos + 20.8 * K
+    ypos = startypos
+    move()
+    return()
+########################################################################################################################
+#           4
+#    ############
+#  3#           #
+#   #     2     #
+#    ############  5
+#      #        #
+#   1 #         #
+#    #          #
+#   #           #
+#
+########################################################################################################################
+def cyrJA():
+    global output, xpos, ypos, zpos, shigh, h, fspeed, cspeed, zdepth
+    K = h / 16
+    zpos = shigh
+    startxpos = xpos
+    startypos = ypos
 
+    #1 going to the start point
+    xpos+=2.05*K
+    ypos+=10*K
+    move()
+    #2 cutting in
+    cutin()
+    #3 1st element
+    xpos+=5*K
+    ypos+=6.7*K
+    cut()
+    #
+    cutout()
+    #
+    xpos+=4.6*K
+    move()
+    #
+    cutin()
+    #
+    xpos-=6.1*K
+    cut()
+    #
+    r=3.5*K
+    ypos+=7*K
+    i=0
+    j=-3.5*K
+    arccw(i,j,r)
+    #
+    xpos+=6.1*K
+    cut()
+    #
+    ypos-=13.7*K
+    cut()
     # cutting out
     cutout()
     # moving to the end position
@@ -1648,16 +1813,218 @@ def cyrJE():
     ypos = startypos
     move()
     return()
-
+########################################################################################################################
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+########################################################################################################################
+def space():
+    global output, xpos, ypos, zpos, shigh, h, fspeed, cspeed, zdepth
+    K = h / 16
+    zpos = shigh
+    xpos+= 15.2 * K
+    move()
+    return()
 ########################################################################################################################
 
-########################################################################################################################
-########################################################################################################################
 #output+='G90 G94 G91.1 G40 G49 G17\nG21\nG28 G91 Z0.\nG90\nT3 M6\nS'
 #output+=str(spindel)
 #output+=' M3\nG17 G90 G94\nG54\n'
 
-cyrJE()
 
-print (output)
+##FORMING TEXT##
+def textparser():
+    global text
+    for letter in text:
+        if 'А' in letter:
+            latA()
+        if 'Б' in letter:
+            cyrB()
+        if 'В' in letter:
+            latB()
+        if 'Г' in letter:
+            cyrG()
+        if 'Д' in letter:
+            cyrD()
+        if 'Е' in letter:
+            latE()
+        if 'Ж' in letter:
+            cyrZH()
+        if 'З' in letter:
+            cyrZ()
+        if 'И' in letter:
+            cyrI()
+        if 'Й' in letter:
+            cyrJ()
+        if 'К' in letter:
+            latK()
+        if 'Л' in letter:
+            cyrL()
+        if 'М' in letter:
+            latM()
+        if 'Н' in letter:
+            latH()
+        if 'О' in letter:
+            latO()
+        if 'П' in letter:
+            cyrP()
+        if 'Р' in letter:
+            latP()
+        if 'С' in letter:
+            latC()
+        if 'Т' in letter:
+            latT()
+        if 'У' in letter:
+            cyrU()
+        if 'Ф' in letter:
+            cyrF()
+        if 'Х' in letter:
+            latX()
+        if 'Ц' in letter:
+            cyrC()
+        if 'Ч' in letter:
+            cyrCH()
+        if 'Ш' in letter:
+            cyrSH()
+        if 'Щ' in letter:
+            cyrSCH()
+        if 'Ъ' in letter:
+            cyrHS()
+        if 'Ы' in letter:
+            cyrY()
+        if 'Ь' in letter:
+            cyrSS()
+        if 'Э' in letter:
+            cyrJE()
+        if 'Ю' in letter:
+            cyrJU()
+        if 'Я' in letter:
+            cyrJA()
+        if ' ' in letter:
+            space()
+
+    return()
+##DETERMINING THE ORIGIN POINT##
+def origination():
+    global text, xpos, ypos,h, origin
+    K=h/16
+    twidth=0.0
+    thigh=13.9*K
+    for letter in text:
+        if 'А' in letter:
+            twidth+=16*K
+        if 'Б' in letter:
+            twidth+=14.4*K
+        if 'В' in letter:
+            twidth+=14.4*K
+        if 'Г' in letter:
+            twidth+=12.8*K
+        if 'Д' in letter:
+            twidth+=17.6*K
+        if 'Е' in letter:
+            twidth+=13.6*K
+        if 'Ж' in letter:
+            twidth+=19.2*K
+        if 'З' in letter:
+            twidth+=13.6*K
+        if 'И' in letter:
+            twidth+=15.2*K
+        if 'Й' in letter:
+            twidth+=15.2*K
+        if 'К' in letter:
+            twidth+=14.4*K
+        if 'Л' in letter:
+            twidth+=16*K
+        if 'М' in letter:
+            twidth+=17.6*K
+        if 'Н' in letter:
+            twidth+=15.2*K
+        if 'О' in letter:
+            twidth+=16*K
+        if 'П' in letter:
+            twidth+=15.2*K
+        if 'Р' in letter:
+            twidth+=14.4*K
+        if 'С' in letter:
+            twidth+=14.4*K
+        if 'Т' in letter:
+            twidth+=14.4*K
+        if 'У' in letter:
+            twidth+=14.4*K
+        if 'Ф' in letter:
+            twidth+=17.6*K
+        if 'Х' in letter:
+            twidth+=15.2*K
+        if 'Ц' in letter:
+            twidth+=16*K
+        if 'Ч' in letter:
+            twidth+=13.6*K
+        if 'Ш' in letter:
+            twidth+=20*K
+        if 'Щ' in letter:
+            twidth+=20.8*K
+        if 'Ъ' in letter:
+            twidth+=16*K
+        if 'Ы' in letter:
+            twidth+=20*K
+        if 'Ь' in letter:
+            twidth+=14.4*K
+        if 'Э' in letter:
+            twidth+=14.4*K
+        if 'Ю' in letter:
+            twidth+=20.8*K
+        if 'Я' in letter:
+            twidth+=14.4*K
+        if ' ' in letter:
+            twidth+=15.2*K
+    cx=0-twidth/2
+    lx=0-2.6*K
+    rx=0-twidth+2.6*K
+    by=0-9.85*K
+    cy=0-9.85*K-(13.9*K)/2
+    uy=(0-9.85-13.9)*K
+    print(origin)
+    if origin==0:
+        xpos=cx
+        ypos=by
+    if origin==1:
+        xpos=lx
+        ypos=by
+    if origin==2:
+        xpos=rx
+        ypos=by
+    if origin==3:
+        xpos=cx
+        ypos=cy
+    if origin==4:
+        xpos=lx
+        ypos=cy
+    if origin==5:
+        xpos=rx
+        ypos=cy
+    if origin==6:
+        xpos=cx
+        ypos=uy
+    if origin==7:
+        xpos=lx
+        ypos=uy
+    if origin==8:
+        xpos=rx
+        ypos=uy
+
+    return()
+print (xpos,ypos)
+print (origin)
+origination()
+print (origin)
+print (xpos,ypos)
+textparser()
+#print (output)
 pyperclip.copy(output)
