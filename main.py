@@ -13,7 +13,11 @@ spindel=25000 #spindel rotation speed RPM
 xpos=0.0
 ypos=0.0
 zpos=10.0
-text='АБВГДЕЖЗИКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'
+
+twidth=0.0
+K = h / 16
+text='АБВГДЕЖЗИКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ\nАБВГДЕЖЗИКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'
+
 ##FETHING THE PARAMETERS##
 
 def input_params(mode,h,origin,talign,zdepth,shigh,cspeed,fspeed,spindel,text):
@@ -58,12 +62,13 @@ def input_params(mode,h,origin,talign,zdepth,shigh,cspeed,fspeed,spindel,text):
     return (mode,h,origin,talign,zdepth,shigh,cspeed,fspeed,spindel,text)
 
 #mode,h,origin,talign,zdepth,shigh,cspeed,fspeed,spindel,text=input_params(mode,h,origin,talign,zdepth,shigh,cspeed,fspeed,spindel,text)
-
+##TEXT PREPARATION##
+text.split('\n')
+lines = len(text)
+thigh=(13.9*K)+((13.9*K+(13.9*K)/2)*(len(text)-1))
 ##VALIDATION##
 
-#placeholder#
-
-#DEBUG
+##THE SECTION OF FORMING G-CODE LINES##
 def cut(): #Cutting stroke
     global output,xpos,ypos,zpos,shigh,h,fspeed,cspeed,zdepth
     output += "G01 X"+str(xpos)+" Y"+str(ypos)+" Z" + str(zpos)+" F"+str(cspeed)+'\n'
@@ -1821,8 +1826,8 @@ def cyrJA():
 #
 #
 #
-#
-#
+#       #                           #
+#       #############################
 #
 ########################################################################################################################
 def space():
@@ -1833,16 +1838,34 @@ def space():
     move()
     return()
 ########################################################################################################################
-
+#
+#                       #
+#                       #
+#                       #
+#                       #
+#           #           #
+#         #             #
+#       #################
+#         #
+#           #
+########################################################################################################################
+def nextline():
+    global output, xpos, ypos, zpos, shigh, h, fspeed, cspeed, zdepth, thigh
+    K = h / 16
+    zpos = shigh
+    ypos-=2.5*thigh
+    move()
+    return()
 #output+='G90 G94 G91.1 G40 G49 G17\nG21\nG28 G91 Z0.\nG90\nT3 M6\nS'
 #output+=str(spindel)
 #output+=' M3\nG17 G90 G94\nG54\n'
 
 
 ##FORMING TEXT##
-def textparser():
+def textparser(i):
     global text
-    for letter in text:
+    originationx()
+    for letter in text[i]:
         if 'А' in letter:
             latA()
         if 'Б' in letter:
@@ -1909,122 +1932,133 @@ def textparser():
             cyrJA()
         if ' ' in letter:
             space()
-
     return()
 ##DETERMINING THE ORIGIN POINT##
-def origination():
-    global text, xpos, ypos,h, origin
-    K=h/16
-    twidth=0.0
-    thigh=13.9*K
-    for letter in text:
-        if 'А' in letter:
-            twidth+=16*K
-        if 'Б' in letter:
-            twidth+=14.4*K
-        if 'В' in letter:
-            twidth+=14.4*K
-        if 'Г' in letter:
-            twidth+=12.8*K
-        if 'Д' in letter:
-            twidth+=17.6*K
-        if 'Е' in letter:
-            twidth+=13.6*K
-        if 'Ж' in letter:
-            twidth+=19.2*K
-        if 'З' in letter:
-            twidth+=13.6*K
-        if 'И' in letter:
-            twidth+=15.2*K
-        if 'Й' in letter:
-            twidth+=15.2*K
-        if 'К' in letter:
-            twidth+=14.4*K
-        if 'Л' in letter:
-            twidth+=16*K
-        if 'М' in letter:
-            twidth+=17.6*K
-        if 'Н' in letter:
-            twidth+=15.2*K
-        if 'О' in letter:
-            twidth+=16*K
-        if 'П' in letter:
-            twidth+=15.2*K
-        if 'Р' in letter:
-            twidth+=14.4*K
-        if 'С' in letter:
-            twidth+=14.4*K
-        if 'Т' in letter:
-            twidth+=14.4*K
-        if 'У' in letter:
-            twidth+=14.4*K
-        if 'Ф' in letter:
-            twidth+=17.6*K
-        if 'Х' in letter:
-            twidth+=15.2*K
-        if 'Ц' in letter:
-            twidth+=16*K
-        if 'Ч' in letter:
-            twidth+=13.6*K
-        if 'Ш' in letter:
-            twidth+=20*K
-        if 'Щ' in letter:
-            twidth+=20.8*K
-        if 'Ъ' in letter:
-            twidth+=16*K
-        if 'Ы' in letter:
-            twidth+=20*K
-        if 'Ь' in letter:
-            twidth+=14.4*K
-        if 'Э' in letter:
-            twidth+=14.4*K
-        if 'Ю' in letter:
-            twidth+=20.8*K
-        if 'Я' in letter:
-            twidth+=14.4*K
-        if ' ' in letter:
-            twidth+=15.2*K
+def originationx():
+    global text, xpos, ypos,h, origin, thigh, twidth, K
+    i=0
+    while i<len(text):
+        for letter in text[i]:
+            i+=1
+            if 'А' in letter:
+                twidth+=16*K
+            if 'Б' in letter:
+                twidth+=14.4*K
+            if 'В' in letter:
+                twidth+=14.4*K
+            if 'Г' in letter:
+                twidth+=12.8*K
+            if 'Д' in letter:
+                twidth+=17.6*K
+            if 'Е' in letter:
+                twidth+=13.6*K
+            if 'Ж' in letter:
+                twidth+=19.2*K
+            if 'З' in letter:
+                twidth+=13.6*K
+            if 'И' in letter:
+                twidth+=15.2*K
+            if 'Й' in letter:
+                twidth+=15.2*K
+            if 'К' in letter:
+                twidth+=14.4*K
+            if 'Л' in letter:
+                twidth+=16*K
+            if 'М' in letter:
+                twidth+=17.6*K
+            if 'Н' in letter:
+                twidth+=15.2*K
+            if 'О' in letter:
+                twidth+=16*K
+            if 'П' in letter:
+                twidth+=15.2*K
+            if 'Р' in letter:
+                twidth+=14.4*K
+            if 'С' in letter:
+                twidth+=14.4*K
+            if 'Т' in letter:
+                twidth+=14.4*K
+            if 'У' in letter:
+                twidth+=14.4*K
+            if 'Ф' in letter:
+                twidth+=17.6*K
+            if 'Х' in letter:
+                twidth+=15.2*K
+            if 'Ц' in letter:
+                twidth+=16*K
+            if 'Ч' in letter:
+                twidth+=13.6*K
+            if 'Ш' in letter:
+                twidth+=20*K
+            if 'Щ' in letter:
+                twidth+=20.8*K
+            if 'Ъ' in letter:
+                twidth+=16*K
+            if 'Ы' in letter:
+                twidth+=20*K
+            if 'Ь' in letter:
+                twidth+=14.4*K
+            if 'Э' in letter:
+                twidth+=14.4*K
+            if 'Ю' in letter:
+                twidth+=20.8*K
+            if 'Я' in letter:
+                twidth+=14.4*K
+            if ' ' in letter:
+                twidth+=15.2*K
     cx=0-twidth/2
     lx=0-2.6*K
     rx=0-twidth+2.6*K
-    by=0-9.85*K
-    cy=0-9.85*K-(13.9*K)/2
-    uy=(0-9.85-13.9)*K
-    print(origin)
     if origin==0:
         xpos=cx
-        ypos=by
     if origin==1:
         xpos=lx
-        ypos=by
     if origin==2:
         xpos=rx
-        ypos=by
     if origin==3:
         xpos=cx
-        ypos=cy
     if origin==4:
         xpos=lx
-        ypos=cy
     if origin==5:
         xpos=rx
-        ypos=cy
     if origin==6:
         xpos=cx
-        ypos=uy
     if origin==7:
         xpos=lx
-        ypos=uy
     if origin==8:
         xpos=rx
-        ypos=uy
-
     return()
+########################################################################################################################
+def originationy():
+    cy=0-thigh/2
+    by=0-2.6*K
+    ty=0-thigh+2.6*K
+    if origin==0:
+        ypos=by
+    if origin==1:
+        ypos=by
+    if origin==2:
+        ypos=by
+    if origin==3:
+        ypos=cy
+    if origin==4:
+        ypos=cy
+    if origin==5:
+        ypos=cy
+    if origin==6:
+        ypos=ty
+    if origin==7:
+        ypos=ty
+    if origin==8:
+        ypos=ty
+
+originationy()
+
 print (xpos,ypos)
-print (origin)
-origination()
-print (origin)
-print (xpos,ypos)
-textparser()
-#print (output)
+i=0
+while i<len(text):
+    textparser(i)
+    i+=1
+    nextline()
+
 pyperclip.copy(output)
