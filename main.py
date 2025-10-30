@@ -3,7 +3,7 @@ import pyperclip
 output=str('') #Output file text
 mode=0 #mode. 0 - engraving, 1 - drawing
 h=16 #font high in mm
-origin=3 #position of the origin. 0 - bottom-center, 1 - bottom-left, 2 - bottom-right, 3 - center, 4 - center-left, 5 - center-right, 6 - upper-center, 7 - upper-left 8 - upper-right
+origin=1 #position of the origin. 0 - bottom-center, 1 - bottom-left, 2 - bottom-right, 3 - center, 4 - center-left, 5 - center-right, 6 - upper-center, 7 - upper-left 8 - upper-right
 talign=1 #type of aligning. 0 - center, 1 - left, 2 - right.
 zdepth=-0.1 #z-depth. It uses negative numbers
 shigh=1 #safe high Z mm
@@ -26,10 +26,7 @@ widthdict={
 
     ' ':15.2*K
 }
-inptext='АБВ\nГДЕЖЗИКЛМН\nОПРСТУ\nФХЦЧШЩ\nЪ\nЫЬЭЮЯ'
-
 ##FETHING THE PARAMETERS##
-
 def input_params(mode,h,origin,talign,zdepth,shigh,cspeed,fspeed,spindel,text):
 
     mode=int (input("Choose the mode.\n\n0-engraving\n1-drawing\n\n"))
@@ -43,7 +40,7 @@ def input_params(mode,h,origin,talign,zdepth,shigh,cspeed,fspeed,spindel,text):
     cspeed=int (input("Enter the speed of cutting/drawing\n"))
     fspeed=int (input("Enter the speed of free movements\n"))
     if mode==0: spindel=int (input("Enter the spindle rotation speed\n"))
-    text=str (input("Enter the text\n"))
+    inptext=str (input("Enter the text. For next line use symbol \\n \n"))
 
 ##ENSURING##
 
@@ -70,9 +67,8 @@ def input_params(mode,h,origin,talign,zdepth,shigh,cspeed,fspeed,spindel,text):
     if again=="Y" or again=="y": return (mode,h,origin,talign,zdepth,shigh,cspeed,fspeed,spindel,text)
     else: mode,h,origin,talign,zdepth,shigh,cspeed,fspeed,spindel,text=input_params(mode,h,origin,talign,zdepth,shigh,cspeed,fspeed,spindel,text)
     return (mode,h,origin,talign,zdepth,shigh,cspeed,fspeed,spindel,text)
-
-#mode,h,origin,talign,zdepth,shigh,cspeed,fspeed,spindel,text=input_params(mode,h,origin,talign,zdepth,shigh,cspeed,fspeed,spindel,text)
 ##TEXT PREPARATION##
+inptext='ООО\nОО\nООО\nОО ОООО ОО\nО' #DEBUG
 text=inptext.split('\n')
 lines = len(text)
 thigh=13.9*K*len(text)+6.95*K*(len(text)-1)
@@ -1832,10 +1828,6 @@ def nextline():
     output+='G00 Z'+str(shigh)+'\n'
     ypos-=20.85*K
     return()
-
-output+='G90 G94 G91.1 G40 G49 G17\nG21\nG28 G91 Z0.\nG90\nT3 M6\nS'
-output+=str(spindel)
-output+=' M3\nG17 G90 G94\nG54\n'
 ##FORMING TEXT##
 def textparser(i):
     global text,output
@@ -1908,6 +1900,7 @@ def textparser(i):
             space()
     return()
 ##DETERMINING THE ORIGIN POINT##
+origin=3
 def originationx():
     global text, xpos, ypos,h, origin, thigh, textBoxWidth, K, widthdict,talign
     i=0
@@ -1923,7 +1916,7 @@ def originationx():
     mostlong.sort()
     mostlong.reverse()
     textBoxWidth=float (mostlong[0])
-    cx=0-textBoxWidth/2-2.6*K
+    cx=0-textBoxWidth/2
     lx=0-2.6*K
     rx=0-textBoxWidth+2.6*K
     if origin==0:
@@ -1969,19 +1962,25 @@ def originationy():
     if origin==8:
         ypos=ty
     return()
+
+#talign=2
+
 def aligning(i,textBoxWidth):
     global talign,xpos,ypos
     currlen=0.0
     for letter in text[i]:
         currlen+=widthdict.get(letter)
     if talign==0:
-        xpos=0-currlen/2
+        xpos-=currlen/2+textBoxWidth*1.5
     if talign==1:
-        xpos=0-2.6*K
+        xpos-=2.6*K
     if talign==2:
-        xpos=0-textBoxWidth*2-currlen+2.6*K
+        xpos-=(textBoxWidth*2-currlen+2.6*K)
     return()
 
+output+='G90 G94 G91.1 G40 G49 G17\nG21\nG28 G91 Z0.\nG90\nT3 M6\nS'
+output+=str(spindel)
+output+=' M3\nG17 G90 G94\nG54\n'
 
 move()
 textBoxWidth=originationx()
@@ -1991,7 +1990,7 @@ i=0
 while i<len(text):
     xpos=0
     originationx()
-    aligning(i,textBoxWidth)
+    #aligning(i,textBoxWidth)
     textparser(i)
     output+='(line)\n' #debug
     i+=1
