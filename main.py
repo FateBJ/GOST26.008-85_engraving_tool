@@ -27,8 +27,8 @@ widthdict={
     ' ':15.2*K
 }
 ##FETHING THE PARAMETERS##
-def input_params(mode,h,origin,talign,zdepth,shigh,cspeed,fspeed,spindel,text):
-
+def input_params():
+    global mode,h,origin,talign,zdepth,shigh,cspeed,fspeed,spindel,text,inptext
     mode=int (input("Choose the mode.\n\n0-engraving\n1-drawing\n\n"))
     if mode!=1: mode=0
     h=float (input("Enter the high of the font.\n\n"))
@@ -62,16 +62,12 @@ def input_params(mode,h,origin,talign,zdepth,shigh,cspeed,fspeed,spindel,text):
     if talign==1: print("to left\n")
     if talign==2: print("to right\n")
     print("Z-depth: "+str(zdepth)+"mm \nSafe high: "+str(shigh)+"mm \nCutting speed: "+str(cspeed)+"mm/min\nFree movement speed: "+str(fspeed)+"mm/min\n")
-    if mode==0: print("Spindle speed: "+str(cspeed)+" RPM\n"+"letter: "+text+"\n")
+    if mode==0: print("Spindle speed: "+str(cspeed)+" RPM\n"+"letter: "+inptext+"\n")
     again=input("Is that correct? Y/N\n")
-    if again=="Y" or again=="y": return (mode,h,origin,talign,zdepth,shigh,cspeed,fspeed,spindel,text)
-    else: mode,h,origin,talign,zdepth,shigh,cspeed,fspeed,spindel,text=input_params(mode,h,origin,talign,zdepth,shigh,cspeed,fspeed,spindel,text)
-    return (mode,h,origin,talign,zdepth,shigh,cspeed,fspeed,spindel,text)
-##TEXT PREPARATION##
-inptext='ООО\nОО\nООО\nОО ОООО ОО\nО' #DEBUG
-text=inptext.split('\n')
-lines = len(text)
-thigh=13.9*K*len(text)+6.95*K*(len(text)-1)
+    if again=="Y" or again=="y": return ()
+    else: input_params()
+    return ()
+
 ##VALIDATION##
 
 ##THE SECTION OF FORMING G-CODE LINES##
@@ -1900,7 +1896,6 @@ def textparser(i):
             space()
     return()
 ##DETERMINING THE ORIGIN POINT##
-origin=1 #DEBUG
 def originationx():
     global text, xpos, ypos,h, origin, thigh, textBoxWidth, K, widthdict,talign
     i=0
@@ -1962,7 +1957,6 @@ def originationy():
     if origin==8:
         ypos=ty
     return()
-
 def aligning(i,textBoxWidth):
     global talign,xpos,ypos
     currlen=0.0
@@ -1974,26 +1968,33 @@ def aligning(i,textBoxWidth):
     if talign==2:
         xpos+=textBoxWidth-currlen
     return()
-
-output+='G90 G94 G91.1 G40 G49 G17\nG21\nG28 G91 Z0.\nG90\nT3 M6\nS'
-output+=str(spindel)
-output+=' M3\nG17 G90 G94\nG54\n'
-
-move()
-textBoxWidth=originationx()
-originationy()
-
-i=0
-while i<len(text):
-    xpos=0
-    originationx()
-    aligning(i,textBoxWidth)
-    textparser(i)
-    output+='(line)\n' #debug
-    i+=1
-    nextline()
-
-
-
-output+='G00 X0 Y0 Z10 F'+str(fspeed)+'\n'
-pyperclip.copy(output)
+def main():
+    global output,textBoxWidth,text,spindel,xpos,fspeed,lines,thigh,widthdict
+    ##TEXT PREPARATION##
+#    inptext = 'ООО\nОО\nООО\nОО ОООО ОО\nО'  # DEBUG
+    text = inptext.split('\n')
+    lines = len(text)
+    thigh = 13.9 * K * len(text) + 6.95 * K * (len(text) - 1)
+    ##INITIAL CODES##
+    output+='G90 G94 G91.1 G40 G49 G17\nG21\nG28 G91 Z0.\nG90\nT3 M6\nS'
+    output+=str(spindel)
+    output+=' M3\nG17 G90 G94\nG54\n'
+    ##CONTENT MAKING SECTION##
+    move()
+    textBoxWidth=originationx()
+    originationy()
+    i=0
+    while i<len(text):
+        xpos=0
+        originationx()
+        aligning(i,textBoxWidth)
+        textparser(i)
+        output+='(line)\n' #debug
+        i+=1
+        nextline()
+    ##ENDING CODE##
+    output+='G00 X0 Y0 Z10 F'+str(fspeed)+'\n'
+    pyperclip.copy(output)
+    return()
+input_params()
+main()
