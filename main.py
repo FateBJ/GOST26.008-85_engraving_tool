@@ -1900,7 +1900,7 @@ def textparser(i):
             space()
     return()
 ##DETERMINING THE ORIGIN POINT##
-origin=3
+origin=1 #DEBUG
 def originationx():
     global text, xpos, ypos,h, origin, thigh, textBoxWidth, K, widthdict,talign
     i=0
@@ -1963,19 +1963,16 @@ def originationy():
         ypos=ty
     return()
 
-#talign=2
-
 def aligning(i,textBoxWidth):
     global talign,xpos,ypos
     currlen=0.0
     for letter in text[i]:
         currlen+=widthdict.get(letter)
     if talign==0:
-        xpos-=currlen/2+textBoxWidth*1.5
-    if talign==1:
-        xpos-=2.6*K
+        print (xpos)
+        xpos+=(textBoxWidth-currlen)/2
     if talign==2:
-        xpos-=(textBoxWidth*2-currlen+2.6*K)
+        xpos+=textBoxWidth-currlen
     return()
 
 output+='G90 G94 G91.1 G40 G49 G17\nG21\nG28 G91 Z0.\nG90\nT3 M6\nS'
@@ -1990,7 +1987,7 @@ i=0
 while i<len(text):
     xpos=0
     originationx()
-    #aligning(i,textBoxWidth)
+    aligning(i,textBoxWidth)
     textparser(i)
     output+='(line)\n' #debug
     i+=1
