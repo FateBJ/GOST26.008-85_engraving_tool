@@ -1,5 +1,8 @@
 ##VARIABLE SECTION##
-import pyperclip
+try:  # Optional: the CLI copies the result to the clipboard when this is installed.
+    import pyperclip
+except ImportError:
+    pyperclip = None
 output=str('') #Output file text
 mode=0 #mode. 0 - engraving, 1 - drawing
 h=16 #font high in mm
@@ -15,18 +18,27 @@ ypos=0.0
 zpos=10.0
 textBoxWidth=0.0
 K = h / 16
-widthdict={
-    'А':16*K,   'Б':14.4*K, 'В':14.4*K,     'Й':15.2*K, 'К':14.4*K, 'Л':16*K,
-    'Г':12.8*K, 'Д':17.6*K, 'Е':13.6*K,     'М':17.6*K, 'Н':15.2*K, 'О':16*K,
-    'Ж':19.2*K, 'З':13.6*K, 'И':15.2*K,     'П':15.2*K, 'Р':14.4*K, 'С':14.4*K,
+#Advance width of every glyph at a 16 mm cap height, in font units (1 unit = h/16 mm).
+#widthdict holds millimetres and is rebuilt whenever the height changes.
+WIDTHS = {
+    'А': 16.0, 'Б': 14.4, 'В': 14.4, 'Й': 15.2, 'К': 14.4, 'Л': 16.0,
+    'Г': 12.8, 'Д': 17.6, 'Е': 13.6, 'М': 17.6, 'Н': 15.2, 'О': 16.0,
+    'Ж': 19.2, 'З': 13.6, 'И': 15.2, 'П': 15.2, 'Р': 14.4, 'С': 14.4,
 
-    'Т':14.4*K, 'У':14.4*K, 'Ф':17.6*K,     'Ы':20*K,   'Ь':14.4*K, 'Э':14.4*K,
-    'Х':15.2*K, 'Ц':16*K,   "Ч":13.6*K,     'Ю':20.8*K, 'Я':14.4*K,
-    'Ш':20*K,   'Щ':20.8*K, 'Ъ':16*K,
+    'Т': 14.4, 'У': 14.4, 'Ф': 17.6, 'Ы': 20.0, 'Ь': 14.4, 'Э': 14.4,
+    'Х': 15.2, 'Ц': 16.0, 'Ч': 13.6, 'Ю': 20.8, 'Я': 14.4,
+    'Ш': 20.0, 'Щ': 20.8, 'Ъ': 16.0,
 
-    ' ':15.2*K
+    ' ': 15.2,
 }
-##FETHING THE PARAMETERS##
+
+def build_widthdict():
+    """Glyph widths in millimetres for the current font height."""
+    k = h / 16.0
+    return {letter: width * k for letter, width in WIDTHS.items()}
+
+widthdict = build_widthdict()
+##FETCHING THE PARAMETERS##
 def input_params():
     global mode,h,origin,talign,zdepth,shigh,cspeed,fspeed,spindel,text,inptext
     mode=int (input("Choose the mode.\n\n0-engraving\n1-drawing\n\n"))
@@ -1963,13 +1975,17 @@ def aligning(i,textBoxWidth):
     for letter in text[i]:
         currlen+=widthdict.get(letter)
     if talign==0:
-        print (xpos)
         xpos+=(textBoxWidth-currlen)/2
     if talign==2:
         xpos+=textBoxWidth-currlen
     return()
 def main():
-    global output,textBoxWidth,text,spindel,xpos,fspeed,lines,thigh,widthdict
+    global output,textBoxWidth,text,spindel,xpos,ypos,zpos,fspeed,lines,thigh,widthdict
+    #Every run starts from a clean slate so the module can generate repeatedly.
+    output=''
+    xpos=0.0
+    ypos=0.0
+    zpos=10.0
     ##TEXT PREPARATION##
 #    inptext = 'ООО\nОО\nООО\nОО ОООО ОО\nО'  # DEBUG
     text = inptext.split('\n')
@@ -1994,7 +2010,52 @@ def main():
         nextline()
     ##ENDING CODE##
     output+='G00 X0 Y0 Z10 F'+str(fspeed)+'\n'
-    pyperclip.copy(output)
-    return()
-input_params()
-main()
+    if pyperclip is not None:
+        pyperclip.copy(output)
+    return(output)
+
+##PUBLIC API##
+def generate(text_, font_height=16.0, mode_=0, origin_=1, align_=1, z_depth=-0.1,
+             safe_height=1.0, cut_speed=100, free_speed=3000, spindle_speed=25000):
+    """Generate the G-code for one job and return it as a string.
+
+    text_          text to engrave; every line break starts a new line
+    font_height    cap height in mm
+    mode_          0 - engraving, 1 - drawing
+    origin_        anchor point, 0..8 (see origin)
+    align_         text alignment, 0 - center, 1 - left, 2 - right
+    z_depth        cutting depth in mm (negative)
+    safe_height    safe Z height in mm
+    cut_speed      cutting/drawing feed in mm/min
+    free_speed     rapid feed in mm/min
+    spindle_speed  spindle RPM (engraving only)
+    """
+    global mode, h, origin, talign, zdepth, shigh, cspeed, fspeed, spindel
+    global inptext, output, K, widthdict, xpos, ypos, zpos
+
+    mode = 0 if int(mode_) != 1 else 1
+    h = float(font_height)
+    if h <= 0:
+        raise ValueError('Font height must be greater than zero')
+    origin = int(origin_)
+    talign = int(align_)
+    zdepth = float(z_depth)
+    shigh = float(safe_height)
+    cspeed = int(cut_speed)
+    fspeed = int(free_speed)
+    spindel = int(spindle_speed)
+    inptext = str(text_)
+
+    K = h / 16.0
+    widthdict = build_widthdict()
+    output = ''
+    xpos = 0.0
+    ypos = 0.0
+    zpos = 10.0
+
+    main()
+    return output
+
+if __name__ == '__main__':
+    input_params()
+    main()

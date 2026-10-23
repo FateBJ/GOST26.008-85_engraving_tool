@@ -1,0 +1,3 @@
+PyQt5>=5.15
+# Optional: enables clipboard support in the command-line mode.
+# pyperclip>=1.8
