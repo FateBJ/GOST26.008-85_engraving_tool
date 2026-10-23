@@ -3,6 +3,10 @@ try:  # Optional: the CLI copies the result to the clipboard when this is instal
     import pyperclip
 except ImportError:
     pyperclip = None
+try:  # Glyph outlines generated from the DXF drawings of the font.
+    import font_data
+except ImportError:  # the hand coded alphabet still works without the data file
+    font_data = None
 output=str('') #Output file text
 mode=0 #mode. 0 - engraving, 1 - drawing
 h=16 #font high in mm
@@ -31,6 +35,11 @@ WIDTHS = {
 
     ' ': 15.2,
 }
+
+if font_data is not None:
+    #Lower-case letters, digits and the other generated glyphs.
+    for _char, _glyph in font_data.GLYPHS.items():
+        WIDTHS.setdefault(_char, _glyph['adv'])
 
 def build_widthdict():
     """Glyph widths in millimetres for the current font height."""
@@ -1837,6 +1846,32 @@ def nextline():
     ypos-=20.85*K
     return()
 ##FORMING TEXT##
+def draw_glyph(char):
+    """Engrave one character from the generated font data.
+
+    The coordinates in font_data are in font units (1 unit = h/16 mm) with
+    y = 0 on the baseline, so the same data works for every font height.
+    """
+    global output, xpos, ypos, zpos, h, shigh, zdepth
+    glyph = font_data.GLYPHS[char]
+    K = h / 16.0
+    startx = xpos
+    starty = ypos
+    for stroke in glyph['strokes']:
+        xpos = startx + stroke[0][0] * K
+        ypos = starty + stroke[0][1] * K
+        zpos = shigh
+        move()
+        zpos = zdepth
+        for px, py in stroke:
+            xpos = startx + px * K
+            ypos = starty + py * K
+            cut()
+        zpos = shigh
+        move()
+    xpos = startx + glyph['adv'] * K
+    ypos = starty
+    return()
 def textparser(i):
     global text,output
     for letter in text[i]:
@@ -1906,6 +1941,8 @@ def textparser(i):
             cyrJA()
         if ' ' in letter:
             space()
+        if font_data is not None and letter in font_data.GLYPHS:
+            draw_glyph(letter)
     return()
 ##DETERMINING THE ORIGIN POINT##
 def originationx():
@@ -1915,7 +1952,7 @@ def originationx():
     while i<len(text):
         textBoxWidth = 0.0
         for letter in text[i]:
-            textBoxWidth+=widthdict.get(letter)
+            textBoxWidth+=widthdict.get(letter, 0.0)
         i+=1
         line+=str(textBoxWidth)+','
     line=line[:-1]
@@ -1973,7 +2010,7 @@ def aligning(i,textBoxWidth):
     global talign,xpos,ypos
     currlen=0.0
     for letter in text[i]:
-        currlen+=widthdict.get(letter)
+        currlen+=widthdict.get(letter, 0.0)
     if talign==0:
         xpos+=(textBoxWidth-currlen)/2
     if talign==2:

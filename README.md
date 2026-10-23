@@ -33,3 +33,24 @@ python main.py
 ```
 
 The prompts ask for the same parameters in the terminal.
+
+## Character set
+
+The 33 capital letters are drawn by the hand-tuned routines in `main.py`.
+Everything else comes from `font_data.py`, which holds the centre lines
+extracted from the DXF drawings in `font/`, expressed in font units
+(1 unit = height/16 mm, so the glyphs scale with the font height):
+
+* lower-case Cyrillic а–я (й included, ё is not in the drawings)
+* digits 0–9
+
+Unsupported characters are skipped and listed in the status bar; they take no
+space in the layout. The remaining DXF sheets are not one-glyph-per-cell fonts:
+`signs_*` are specimen charts of punctuation and mathematical symbols (mixed
+sizes, overlapping rows) and `digits_roman` shows numeral *examples* built from
+I/V/X rather than separate characters. The Latin and Greek sheets contain only
+the letters whose shapes differ from Cyrillic, so they need a fallback table
+before they can be used as full alphabets.
+
+`font_data.py` is generated; do not edit it by hand.
+
